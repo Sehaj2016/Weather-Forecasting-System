@@ -4,4 +4,10 @@ requests
 streamlit
 pandas
 python-dotenv
+scikit-learn
+matplotlib
+requests
+streamlit
+pandas
+python-dotenv
 seaborn
