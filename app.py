@@ -144,7 +144,11 @@ if uploaded_file is not None:
     source = uploaded_file
 
 try:
-    df = pd.read_csv(source)
+    @st.cache_data
+def load_csv(source):
+    return pd.read_csv(source, low_memory=False)
+
+df = load_csv(source)
     df.columns = df.columns.str.strip()
     if 'Formatted Date' in df.columns:
         df = df.rename(columns={'Formatted Date': 'date'})
@@ -155,7 +159,9 @@ try:
         # Normalize timezone-aware timestamps to UTC and remove tz info for plotting consistency
         df['date'] = df['date'].dt.tz_convert('UTC').dt.tz_localize(None)
         numeric_columns = df.select_dtypes(include='number').columns.tolist()
-        categorical_columns = df.select_dtypes(include=['object', 'category']).columns.tolist()
+        categorical_columns = df.select_dtypes(
+    include=['object', 'category', 'string']
+).columns.tolist()
         
         if not numeric_columns:
             st.warning('No numeric columns to plot.')
