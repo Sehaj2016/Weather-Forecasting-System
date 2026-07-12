@@ -145,8 +145,15 @@ if uploaded_file is not None:
 
 try:
     @st.cache_data
-def load_csv(source):
-    return pd.read_csv(source, low_memory=False)
+    def load_csv(source):
+        return pd.read_csv(source, low_memory=False)
+
+    df = load_csv(source)
+    df.columns = df.columns.str.strip()
+
+    # rest of your code...
+except Exception as e:
+    st.error(f"Error: {e}")
 
 df = load_csv(source)
     df.columns = df.columns.str.strip()
