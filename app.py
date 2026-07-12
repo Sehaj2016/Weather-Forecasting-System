@@ -138,30 +138,27 @@ if st.button('Generate 7-Day Forecast'):
 st.markdown('---')
 st.header('📈 Historical Weather Trends')
 
-uploaded_file = st.file_uploader('Upload weather CSV', type=['csv'])
-source = 'data/weather.csv'
+uploaded_file = st.file_uploader("Upload weather CSV", type=["csv"])
+
+source = "data/weather.csv"
 if uploaded_file is not None:
     source = uploaded_file
 
-try:
-    @st.cache_data
-    def load_csv(source):
-        return pd.read_csv(source, low_memory=False)
+@st.cache_data
+def load_csv(source):
+    return pd.read_csv(source, low_memory=False)
 
+try:
     df = load_csv(source)
     df.columns = df.columns.str.strip()
 
-    # rest of your code...
-except Exception as e:
-    st.error(f"Error: {e}")
+    if "Formatted Date" in df.columns:
+        df = df.rename(columns={"Formatted Date": "date"})
 
-df = load_csv(source)
-    df.columns = df.columns.str.strip()
-    if 'Formatted Date' in df.columns:
-        df = df.rename(columns={'Formatted Date': 'date'})
-    if 'date' not in df.columns:
-        st.warning('CSV requires date/Formatted Date column.')
+    if "date" not in df.columns:
+        st.warning("CSV requires date/Formatted Date column.")
     else:
+        # Rest of your plotting code...
         df['date'] = pd.to_datetime(df['date'], errors='coerce', utc=True)
         # Normalize timezone-aware timestamps to UTC and remove tz info for plotting consistency
         df['date'] = df['date'].dt.tz_convert('UTC').dt.tz_localize(None)
